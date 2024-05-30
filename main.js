@@ -63,6 +63,8 @@ const uniforms = {
 
   u_time: { value: 0 },
 };
+
+// Set material properties
 material.uniforms = uniforms;
 material.vertexShader = vertCode;
 material.fragmentShader = fragCode;
@@ -73,7 +75,6 @@ scene.add(rayMarchPlane);
 // Needed inside update function
 let cameraForwardPos = new THREE.Vector3(0, 0, -1);
 const VECTOR3ZERO = new THREE.Vector3(0, 0, 0);
-
 let time = Date.now();
 
 // Render the scene
@@ -85,11 +86,13 @@ const animate = () => {
   rayMarchPlane.position.copy(cameraForwardPos);
   rayMarchPlane.rotation.copy(camera.rotation);
 
+  // Render the scene
   renderer.render(scene, camera);
 
   // Update uniforms
   uniforms.u_time.value = (Date.now() - time) / 1000;
 
+  // Update controls
   controls.update();
 }
 animate();
