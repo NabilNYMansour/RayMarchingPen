@@ -114,15 +114,15 @@ void main() {
     // Ray marching and find total distance travelled
     float disTravelled = rayMarch(ro, rd); // use normalized ray
 
-    // Find the hit position
-    vec3 hp = ro + disTravelled * rd;
-    
-    // Get normal of hit point
-    vec3 n = normal(hp);
-
     if (disTravelled >= u_maxDis) { // if ray doesn't hit anything
         gl_FragColor = vec4(u_clearColor,1);
     } else { // if ray hits something
+        // Find the hit position
+        vec3 hp = ro + disTravelled * rd;
+    
+        // Get normal of hit point
+        vec3 n = normal(hp);
+        
         // Calculate Diffuse model
         float dotNL = dot(n, u_lightDir);
         float diff = max(dotNL, 0.0) * u_diffIntensity;
