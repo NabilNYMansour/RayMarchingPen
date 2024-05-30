@@ -59,8 +59,9 @@ const uniforms = {
   u_diffIntensity: { value: 0.5 },
   u_specIntensity: { value: 3 },
   u_ambientIntensity: { value: 0.15 },
-
   u_shininess: { value: 16 },
+
+  u_time: { value: 0 },
 };
 material.uniforms = uniforms;
 material.vertexShader = vertCode;
@@ -73,17 +74,22 @@ scene.add(rayMarchPlane);
 let cameraForwardPos = new THREE.Vector3(0, 0, -1);
 const VECTOR3ZERO = new THREE.Vector3(0, 0, 0);
 
+let time = Date.now();
+
 // Render the scene
 const animate = () => {
   requestAnimationFrame(animate);
-  
+
   // Update screen plane position and rotation
   cameraForwardPos = camera.position.clone().add(camera.getWorldDirection(VECTOR3ZERO).multiplyScalar(camera.near));
   rayMarchPlane.position.copy(cameraForwardPos);
   rayMarchPlane.rotation.copy(camera.rotation);
 
   renderer.render(scene, camera);
-  
+
+  // Update uniforms
+  uniforms.u_time.value = (Date.now() - time) / 1000;
+
   controls.update();
 }
 animate();

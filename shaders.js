@@ -39,11 +39,22 @@ uniform float u_specIntensity;
 uniform float u_ambientIntensity;
 uniform float u_shininess;
 
-float scene(vec3 p) {
-  float sphere1Dis = distance(p, vec3(0, 1,0)) - 1.;
-  float sphere2Dis = distance(p, vec3(0,-1,0)) - 0.75;
+uniform float u_time;
 
-  return min(sphere1Dis, sphere2Dis);
+float smin(float a, float b, float k) {
+  float h = clamp(0.5 + 0.5 * (b - a) / k, 0.0, 1.0);
+  return mix(b, a, h) - k * h * (1.0 - h);
+}
+
+float scene(vec3 p) {
+  // distance to sphere 1
+  float sphere1Dis = distance(p, vec3(cos(u_time), sin(u_time), 0)) - 1.;
+
+  // distance to sphere 2
+  float sphere2Dis = distance(p, vec3(sin(u_time), cos(u_time), 0)) - 0.75;
+
+  // return the minimum distance between the two spheres smoothed by 0.5
+  return smin(sphere1Dis, sphere2Dis, 0.5);
 }
 
 float rayMarch(vec3 ro, vec3 rd)
@@ -67,14 +78,16 @@ float rayMarch(vec3 ro, vec3 rd)
 }
 
 vec3 sceneCol(vec3 p) {
-  float sphere1Dis = distance(p, vec3(0, 1,0)) - 1.;
-  float sphere2Dis = distance(p, vec3(0,-1,0)) - 0.75;
+  float sphere1Dis = distance(p, vec3(cos(u_time), sin(u_time), 0)) - 1.;
+  float sphere2Dis = distance(p, vec3(sin(u_time), cos(u_time), 0)) - 0.75;
 
-  if (sphere1Dis < sphere2Dis) {
-    return vec3(1,0,0);
-  } else {
-    return vec3(0,0,1);
-  }
+  float k = 0.5; // The same parameter used in the smin function in "scene"
+  float h = clamp(0.5 + 0.5 * (sphere2Dis - sphere1Dis) / k, 0.0, 1.0);
+
+  vec3 color1 = vec3(1, 0, 0); // Red
+  vec3 color2 = vec3(0, 0, 1); // Blue
+
+  return mix(color1, color2, h);
 }
 
 vec3 normal(vec3 p) // from https://iquilezles.org/articles/normalsSDF/
